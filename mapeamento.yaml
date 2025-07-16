@@ -1,0 +1,51 @@
+model: 'Exemplo EDI'
+registers:
+  '000':
+    father: null
+  '032':
+    father: '000'
+  '321':
+    father: '032'
+  '322':
+    father: '321'
+  '329':
+    father: '322'
+  '323':
+    father: '032'
+
+fields:
+  root.cabecalho.nome:
+    register: '000'
+    start: 4
+    positions: 30
+    type: 'string'
+
+  root.processos[].numero:
+    register: '032'
+    start: 71
+    positions: 10
+    type: 'string'
+
+  root.processos[].empresa.cnpj:
+    register: '321'
+    start: 5
+    positions: 14
+    type: 'string'
+
+  root.processos[].empresa.nome:
+    register: '321'
+    start: 19
+    positions: 30
+    type: 'string'
+
+  root.processos[].empresa.itens[].quantidade:
+    register: '322'
+    start: 10
+    positions: 1
+    type: 'number'
+
+  root.processos[].empresa.itens[].codigo:
+    register: '322'
+    start: 20
+    positions: 4
+    type: 'string'
