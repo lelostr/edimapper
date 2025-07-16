@@ -1,0 +1,9 @@
+# exemplo de arquivo yaml
+model: 'teste 01'
+fields:
+  person.name:
+    detail: 'nome da pessoa'
+    register: 001
+    start: 4
+    positions: 30
+    type: 'string'

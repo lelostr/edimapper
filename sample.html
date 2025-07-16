@@ -1,0 +1,14 @@
+<textarea id="ediArea" rows="10" cols="80">
+001NOME DE TRINTA CARACTERES     11222333000199                          
+002RUA ONDE A PESSOA MORA                            9128A     00.999-999
+</textarea>
+
+<script>
+    const ediArea = document.getElementById('ediArea');
+    ediArea.addEventListener('mouseup', () => {
+        const start = ediArea.selectionStart;
+        const end = ediArea.selectionEnd;
+        const length = end - start;
+        console.log('Início:', start + 1, 'Tamanho:', length);
+    });
+</script>

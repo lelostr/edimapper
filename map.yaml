@@ -1,0 +1,33 @@
+# exemplo de arquivo yaml
+model: 'teste 01'
+fields:
+  person.name:
+    detail: 'nome da pessoa'
+    register: 001
+    start: 4
+    positions: 30
+    type: 'string'
+  person.document:
+    detail: 'documento da pessoa'
+    register: 001
+    start: 34
+    positions: 14
+    type: 'number'
+  person.address.street:
+    detail: 'rua do endereco da pessoa'
+    register: 002
+    start: 4
+    positions: 50
+    type: ''
+  person.address.number:
+    detail: 'numero do endereco da pessoa'
+    register: 002
+    start: 54
+    positions: 10
+    type: ''
+  person.address.cep:
+    detail: 'cep do endereco da pessoa'
+    register: 002
+    start: 64
+    positions: 10
+    type: ''
