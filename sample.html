@@ -1,74 +1,145 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-    <head>
-        <meta charset="UTF-8" />
-        <title>Editor EDI Visual</title>
-        <style>
-            textarea {
-                width: 100%;
-                height: 200px;
-                font-family: monospace;
-                white-space: pre;
-            }
-            .output {
-                margin-top: 10px;
-                font-family: monospace;
-            }
-        </style>
-    </head>
-    <body>
-        <h2>Editor EDI Visual</h2>
+<head>
+  <meta charset="UTF-8">
+  <title>Editor EDI para YAML</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      gap: 20px;
+      padding: 20px;
+    }
+    textarea {
+      font-family: monospace;
+      white-space: pre;
+    }
+    #ediArea {
+      width: 500px;
+      height: 300px;
+    }
+    #yamlOutput {
+      width: 400px;
+      height: 300px;
+    }
+    .controls {
+      margin-top: 10px;
+    }
+    input[type="text"] {
+      width: 250px;
+    }
+  </style>
+</head>
+<body>
 
-        <textarea id="ediArea">
+<div>
+  <h2>Arquivo EDI</h2>
+  <textarea id="ediArea">
 001NOME DE TRINTA CARACTERES     11222333000199                          
 002RUA ONDE A PESSOA MORA                            9128A     00.999-999
-</textarea
-        >
+  </textarea>
 
-        <div class="output" id="info"></div>
+  <div class="controls">
+    <label for="fieldName">Nome do campo:</label>
+    <input type="text" id="fieldName" placeholder="ex: person.name">
+    <button onclick="addField()">Adicionar campo</button>
+  </div>
+</div>
 
-        <script>
-            const ediArea = document.getElementById('ediArea');
-            const infoDiv = document.getElementById('info');
+<div>
+  <h2>YAML Gerado</h2>
+  <textarea id="yamlOutput" readonly></textarea>
+  <br>
+  <button onclick="downloadYAML()">Baixar YAML</button>
+</div>
 
-            ediArea.addEventListener('mouseup', () => {
-                const text = ediArea.value;
-                const selectionStart = ediArea.selectionStart;
-                const selectionEnd = ediArea.selectionEnd;
+<script>
+  const ediArea = document.getElementById("ediArea");
+  const fieldNameInput = document.getElementById("fieldName");
+  const yamlOutput = document.getElementById("yamlOutput");
 
-                // Divide o conteúdo em linhas
-                const lines = text.split('\n');
+  let yamlData = {
+    model: 'modelo teste',
+    fields: {}
+  };
 
-                let charCount = 0;
-                let lineIndex = 0;
-                let colStart = 0;
+  function addField() {
+    const fieldName = fieldNameInput.value.trim();
+    if (!fieldName) {
+      alert("Defina o nome do campo.");
+      return;
+    }
 
-                // Descobre em qual linha começa a seleção
-                for (let i = 0; i < lines.length; i++) {
-                    const line = lines[i];
-                    if (selectionStart < charCount + line.length + 1) {
-                        // +1 por causa do \n
-                        lineIndex = i;
-                        colStart = selectionStart - charCount;
-                        break;
-                    }
-                    charCount += line.length + 1;
-                }
+    const text = ediArea.value;
+    const selectionStart = ediArea.selectionStart;
+    const selectionEnd = ediArea.selectionEnd;
+    const selectionLength = selectionEnd - selectionStart;
 
-                const lineText = lines[lineIndex] || '';
-                const selectionLength = selectionEnd - selectionStart;
-                const selectedText = text.substring(
-                    selectionStart,
-                    selectionEnd,
-                );
+    if (selectionLength === 0) {
+      alert("Selecione um trecho do texto.");
+      return;
+    }
 
-                infoDiv.innerHTML = `
-      <strong>Linha:</strong> ${lineIndex + 1} <br>
-      <strong>Coluna de início:</strong> ${colStart + 1} <br>
-      <strong>Comprimento:</strong> ${selectionLength} <br>
-      <strong>Texto selecionado:</strong> <code>${selectedText}</code>
-    `;
-            });
-        </script>
-    </body>
+    const lines = text.split('\n');
+    let charCount = 0;
+    let lineIndex = 0;
+    let colStart = 0;
+
+    // Identifica a linha e coluna da seleção
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      if (selectionStart < charCount + line.length + 1) {
+        lineIndex = i;
+        colStart = selectionStart - charCount;
+        break;
+      }
+      charCount += line.length + 1;
+    }
+
+    const selectedLine = lines[lineIndex] || '';
+    const register = selectedLine.substring(0, 3);
+
+    // Monta o campo
+    yamlData.fields[fieldName] = {
+      detail: '',
+      register: register,
+      start: colStart + 1, // posição 1-based
+      positions: selectionLength,
+      type: 'string'
+    };
+
+    updateYamlOutput();
+    fieldNameInput.value = '';
+    ediArea.focus();
+  }
+
+  function updateYamlOutput() {
+    let yaml = `model: '${yamlData.model}'\nfields:\n`;
+
+    for (const [key, field] of Object.entries(yamlData.fields)) {
+      yaml += `  ${key}:\n`;
+      yaml += `    detail: '${field.detail}'\n`;
+      yaml += `    register: ${field.register}\n`;
+      yaml += `    start: ${field.start}\n`;
+      yaml += `    positions: ${field.positions}\n`;
+      yaml += `    type: '${field.type}'\n`;
+    }
+
+    yamlOutput.value = yaml;
+  }
+
+  function downloadYAML() {
+    const blob = new Blob([yamlOutput.value], { type: 'text/yaml' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'mapeamento.yaml';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+</script>
+
+</body>
 </html>
