@@ -1,39 +1,60 @@
 # exemplo de arquivo yaml
 model: 'notfis 01'
+registers:
+  '000':
+    father: null
+  '035':
+    father: '000'
+  '351':
+    father: '035'
+  '352':
+    father: '351'
+  '353':
+    father: '351'
+  '355':
+    father: '035'
 fields:
+  root:
+    register: '000'
+    start: 1
+    positions: 3
+  root.dois:
+    register: '035'
+    start: 5
+    positions: 15
   issuer.cnpj:
     detail: 'cnpj do emissor'
-    register: 351
+    register: '351'
     start: 4
     positions: 14
     type: 'number'
   issuer.name:
     detail: 'nome do emissor'
-    register: 351
+    register: '351'
     start: 18
     positions: 50
     type: 'number'
   nf.serie:
     detail: ''
-    register: 352
+    register: '352'
     start: 14
     positions: 4
     type: 'string'
   nf.number:
     detail: ''
-    register: 352
+    register: '352'
     start: 18
     positions: 10
     type: 'string'
   nf.emission_date:
     detail: ''
-    register: 352
+    register: '352'
     start: 28
     positions: 8
     type: 'string'
   nf.total:
     detail: ''
-    register: 352
+    register: '352'
     start: 44
     positions: 15
     type: 'number'
