@@ -2,37 +2,68 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Editor EDI para YAML</title>
+  <title>Editor Visual EDI → YAML</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      display: flex;
-      gap: 20px;
-      padding: 20px;
+    * {
+      box-sizing: border-box;
     }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
+      padding: 10px;
+    }
+
+    .panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
     textarea {
+      width: 100%;
+      flex: 1;
+      resize: none;
       font-family: monospace;
+      font-size: 14px;
+      padding: 8px;
       white-space: pre;
     }
-    #ediArea {
-      width: 500px;
-      height: 300px;
-    }
-    #yamlOutput {
-      width: 400px;
-      height: 300px;
-    }
+
     .controls {
       margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
     }
-    input[type="text"] {
-      width: 250px;
+
+    .controls input[type="text"] {
+      flex: 1;
+      min-width: 250px;
+      padding: 6px;
+    }
+
+    .controls button {
+      padding: 6px 12px;
+    }
+
+    h2 {
+      margin: 5px 0;
     }
   </style>
 </head>
 <body>
 
-<div>
+<div class="panel">
   <h2>Arquivo EDI</h2>
   <textarea id="ediArea">
 001NOME DE TRINTA CARACTERES     11222333000199                          
@@ -46,11 +77,12 @@
   </div>
 </div>
 
-<div>
+<div class="panel">
   <h2>YAML Gerado</h2>
-  <textarea id="yamlOutput" readonly></textarea>
-  <br>
-  <button onclick="downloadYAML()">Baixar YAML</button>
+  <textarea id="yamlOutput"></textarea>
+  <div class="controls">
+    <button onclick="downloadYAML()">Baixar YAML</button>
+  </div>
 </div>
 
 <script>
@@ -99,11 +131,10 @@
     const selectedLine = lines[lineIndex] || '';
     const register = selectedLine.substring(0, 3);
 
-    // Monta o campo
     yamlData.fields[fieldName] = {
       detail: '',
       register: register,
-      start: colStart + 1, // posição 1-based
+      start: colStart + 1,
       positions: selectionLength,
       type: 'string'
     };
