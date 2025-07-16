@@ -1,14 +1,74 @@
-<textarea id="ediArea" rows="10" cols="80">
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Editor EDI Visual</title>
+        <style>
+            textarea {
+                width: 100%;
+                height: 200px;
+                font-family: monospace;
+                white-space: pre;
+            }
+            .output {
+                margin-top: 10px;
+                font-family: monospace;
+            }
+        </style>
+    </head>
+    <body>
+        <h2>Editor EDI Visual</h2>
+
+        <textarea id="ediArea">
 001NOME DE TRINTA CARACTERES     11222333000199                          
 002RUA ONDE A PESSOA MORA                            9128A     00.999-999
-</textarea>
+</textarea
+        >
 
-<script>
-    const ediArea = document.getElementById('ediArea');
-    ediArea.addEventListener('mouseup', () => {
-        const start = ediArea.selectionStart;
-        const end = ediArea.selectionEnd;
-        const length = end - start;
-        console.log('Início:', start + 1, 'Tamanho:', length);
-    });
-</script>
+        <div class="output" id="info"></div>
+
+        <script>
+            const ediArea = document.getElementById('ediArea');
+            const infoDiv = document.getElementById('info');
+
+            ediArea.addEventListener('mouseup', () => {
+                const text = ediArea.value;
+                const selectionStart = ediArea.selectionStart;
+                const selectionEnd = ediArea.selectionEnd;
+
+                // Divide o conteúdo em linhas
+                const lines = text.split('\n');
+
+                let charCount = 0;
+                let lineIndex = 0;
+                let colStart = 0;
+
+                // Descobre em qual linha começa a seleção
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i];
+                    if (selectionStart < charCount + line.length + 1) {
+                        // +1 por causa do \n
+                        lineIndex = i;
+                        colStart = selectionStart - charCount;
+                        break;
+                    }
+                    charCount += line.length + 1;
+                }
+
+                const lineText = lines[lineIndex] || '';
+                const selectionLength = selectionEnd - selectionStart;
+                const selectedText = text.substring(
+                    selectionStart,
+                    selectionEnd,
+                );
+
+                infoDiv.innerHTML = `
+      <strong>Linha:</strong> ${lineIndex + 1} <br>
+      <strong>Coluna de início:</strong> ${colStart + 1} <br>
+      <strong>Comprimento:</strong> ${selectionLength} <br>
+      <strong>Texto selecionado:</strong> <code>${selectedText}</code>
+    `;
+            });
+        </script>
+    </body>
+</html>
